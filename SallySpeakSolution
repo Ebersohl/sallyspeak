@@ -1,0 +1,129 @@
+/*Author: Amber Ebersohl
+  Date: 05NOV2019
+  Purpose: Parse out a doggo language. Proper doggo grammar is considered:
+  	<sallyspeak> ::= <reaction><expression>{<expression>}
+	<reaction> ::= earperk{tailwag}
+	<expression> ::= bark <whimpergrowl><reaction>
+	<whimpergrowl> ::= whimper | growl 			*/
+
+import java.util.Scanner;
+
+public class SallySpeakSolution {
+
+	// Variables
+	Scanner tokenizer;
+	private String token;
+	boolean legal = true;
+	
+	// Constructor
+	public SallySpeakSolution(java.lang.String stringToParse) {
+		this.tokenizer = new Scanner(stringToParse);
+		nextToken();
+	}
+	
+	//Methods
+	/** Parse the input, and determine if it is syntactically correct **/
+	public boolean isLegal() {
+		
+		if (legal) {
+			reaction();
+		}
+		if (legal) {
+			expression();
+		}
+		while (legal && !token.contentEquals("bite")) {
+			expression();
+		}
+		
+		return legal;
+	}
+	
+	
+	/** Tests for earperks and tailwags **/
+	public void reaction() {
+		
+		// Test if the string is already illegal
+		if (!legal) {
+			return;
+		}
+		
+		// Test for an earperk. If present, look also for tailwag(s).
+		if (token.contentEquals("earperk")){
+			nextToken();
+			if (token.contentEquals("tailwag")) {
+				while (token.contentEquals("tailwag")){
+					nextToken();
+				}
+			}
+		}
+		else {
+			legal = false;
+		}
+		
+	}
+	
+	
+	/** Tests for barks, whimpergrowls, then reactions **/
+	public void expression() {
+		
+		// Test if the string is already illegal
+		if (!legal) {
+			return;
+		}
+		
+		// Test for bark. If yes, move on and check for wimpergrowl. If still yes, check reaction.
+		if (token.contentEquals("bark")) {
+			nextToken();
+			wimpergrowl();
+			if (legal) {
+				reaction();	
+			}
+			else {
+				return;
+			}
+		}
+		else {
+			legal = false;
+		}
+		
+	}
+	
+	
+	/** Tests for a whimper or growl **/
+	public void wimpergrowl() {
+		
+		// Test if the string is already illegal
+		if (!legal) {
+			return;
+		}
+		
+		// Test for whimper or growl, move on if it exists. Set legal to false otherwise.
+		if (token.contentEquals("whimper")||token.contentEquals("growl")) {
+			nextToken();
+		}
+		else {
+			legal=false;
+		}
+		
+	}
+	
+	
+	/** Advances the current token **/
+	public void nextToken() {
+		
+		// Test if the string is already illegal
+		if (!legal) {
+			return;
+		}
+		
+		// Test if there's another token to be read. Move on if so, set token to bite if not.
+		if (tokenizer.hasNext()){
+			token = tokenizer.next();
+		}
+		else {
+			token = "bite";
+		}
+		
+	}
+	
+}
